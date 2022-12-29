@@ -38,34 +38,53 @@ async function run() {
         })
 
 
-        app.get('/task', async (req, res) => {
-
+        app.get('/task/:uid', async (req, res) => {
+            const uid = req.params.uid;
+            const query = { uid: uid };
             const filter = { complete: false };
 
-            const task = await mytaskCollection.find(filter).toArray();
+            const task = await mytaskCollection.find(query).toArray();
             res.send(task,);
-            // }
-
-            // else {
-            //     const query = { category: category, booking: "false" };
-            //     const products = await productCollection.find(query).toArray();
-            //     res.send(products);
-            // }
         })
-        app.get('/completedtask', async (req, res) => {
 
+
+
+        app.get('/completedtask/:uid', async (req, res) => {
+            const uid = req.params.uid;
+            const query = { uid: uid };
             const filter = { complete: true };
 
-            const task = await mytaskCollection.find(filter).toArray();
+            const task = await mytaskCollection.find(query).toArray();
             res.send(task,);
-            // }
 
-            // else {
-            //     const query = { category: category, booking: "false" };
-            //     const products = await productCollection.find(query).toArray();
-            //     res.send(products);
-            // }
         })
+        app.put('/complete/:id', async (req, res) => {
+            const id = req.params.id;
+
+            console.log(id)
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    complete: true,
+                }
+            }
+            const result = await mytaskCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        })
+
+
+
+
+
+        app.delete('/delete/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await mytaskCollection.deleteOne(filter);
+            res.send(result);
+        })
+
+
     }
     finally {
 
